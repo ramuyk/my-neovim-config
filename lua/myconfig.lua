@@ -44,6 +44,10 @@ vim.keymap.set('n', '<leader>wk', ':q<CR>')
 
 -- Map the function to Tab key in visual mode
 vim.keymap.set('v', '<Tab>', ':lua ToggleComments()<CR>')
+vim.keymap.set('n', '<leader>cc', ':lua ExecuteOnTerminal("I")<CR>')
+vim.keymap.set('v', '<leader>cc', ':lua ExecuteOnTerminal("V")<CR>')
+--   ExecuteOnTerminal 'V'
+-- end)
 
 -- special characters
 vim.keymap.set('n', '<leader>.', ':Telescope commands<CR>')
@@ -136,4 +140,49 @@ function ReloadConfig()
 
   -- Provide feedback that the configuration has been reloaded
   print 'Configuration reloaded!'
+end
+
+function ExecuteOnTerminal(type)
+  local ft = vim.bo.filetype -- Get the current buffer's filetype
+  local file_path = '/tmp/file.' .. (ft == 'javascript' and 'js' or ft)
+  local file_path_mjs = '/tmp/file.mjs'
+
+  -- Write to the specific file based on type
+  vim.cmd(type == 'V' and ("'<,'>w! " .. file_path) or (':w! ' .. file_path))
+
+  if ft == 'javascript' then
+    -- Array of commands to be executed
+    local cmds = {
+      'sed -i "/global.get/d" ' .. file_path,
+      'sed -i "/node.status/d" ' .. file_path,
+      -- additional sed commands
+    }
+
+    -- Execute commands
+    for _, cmd in ipairs(cmds) do
+      os.execute(cmd)
+    end
+
+    -- JSON and file handling
+    if os.execute 'jq -e . ~/payload >/dev/null 2>&1' == 0 then
+      os.execute('sed -i "6i let global = new Map();" ' .. file_path)
+      -- Correct handling of single and double quotes in os.execute
+    end
+
+    local language = io.popen(
+      'file="'
+        .. file_path
+        .. '"; flag="false"; while read line; do if [[ "$line" =~ ^import.*$ ]]; then flag="true"; fi; done < $file; if [[ "$flag" == "true" ]]; then echo "mjs"; else echo "js"; fi'
+    )
+    local result = language:read '*a'
+    language:close()
+
+    if result:match 'mjs' then
+      os.execute('cp ' .. file_path .. ' ' .. file_path_mjs)
+      file_path = file_path_mjs
+    end
+
+    vim.cmd(':vert sp | terminal env NODE_PATH=/home/rafael/node_modules node ' .. file_path)
+    os.execute 'xdotool key "Control_L+e"; xdotool type r'
+  end
 end
