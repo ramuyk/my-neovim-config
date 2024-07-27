@@ -75,3 +75,72 @@ nnoremap zfa :call UpdateAndFold()<CR>
 nnoremap zfu :call UpdateAndUnfold()<CR>
 nnoremap <Tab> :call ToggleFold()<CR>
 
+"* narrow
+let g:originalFoldRange = {}
+function! OpenFoldInNewBuffer()
+  normal! zx
+  normal! zM
+  let foldStart = foldclosed('.')
+  let foldEnd = foldclosedend('.')
+  
+  if foldStart == -1 || foldEnd == -1
+    echo "Not in a fold"
+    return
+  endif
+
+  " Store original buffer number and fold range
+  let g:originalFoldRange = {'bufnr': bufnr('%'), 'start': foldStart, 'end': foldEnd}
+
+  let currentFileType = &filetype
+  silent execute foldStart . ',' . foldEnd . 'yank'
+  enew
+  execute 'setlocal filetype=' . currentFileType
+  0put
+  normal! Gddgg
+  if line('$') > 1
+    execute '1delete'
+  endif
+endfunction
+
+nnoremap zn :call OpenFoldInNewBuffer()<CR>
+
+"* widen
+function! ReplaceFoldContent()
+  " Check if 'g:originalFoldRange' exists and if the current buffer has no associated file
+  if !exists('g:originalFoldRange') || bufname('%') != ''
+    echo "This command can only be executed in a temporary buffer opened by zn"
+    return
+  endif
+
+  " Enable hiding buffers with unsaved changes
+  set hidden
+
+  " Store the edited content from the temporary buffer
+  let editedContent = getline(1, '$')
+
+  " Switch to the original buffer
+  execute 'buffer' . g:originalFoldRange.bufnr
+
+  " Delete the old content inside the fold, excluding the fold start line
+  if g:originalFoldRange.start < g:originalFoldRange.end
+    execute (g:originalFoldRange.start + 1) . ',' . g:originalFoldRange.end . 'delete'
+  endif
+
+  " Insert the new content after the fold start line
+  call append(g:originalFoldRange.start, editedContent)
+
+  " Close the temporary buffer
+  let tempBufferNr = bufnr('#')
+  execute 'bdelete! ' . tempBufferNr
+
+  " Move cursor to the start of the fold that was edited
+  execute g:originalFoldRange.start
+
+  " Reapply folding and open the current fold if it exists
+  normal! zx
+  normal! zM
+  normal! zo
+endfunction
+
+nnoremap zu :call ReplaceFoldContent()<CR>
+
