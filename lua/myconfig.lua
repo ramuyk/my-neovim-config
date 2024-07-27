@@ -3,6 +3,8 @@ vim.o.number = true
 vim.o.relativenumber = true
 vim.o.clipboard = 'unnamedplus'
 
+local builtin = require 'telescope.builtin'
+
 --* special characters
 vim.keymap.set('n', '<C-Left>', ':bprevious<CR>')
 vim.keymap.set('n', '<C-Right>', ':bnext<CR>')
@@ -13,7 +15,8 @@ vim.keymap.set('n', '<C-h>', '<C-w>h')
 vim.keymap.set('v', '<Tab>', ':lua ToggleComments()<CR>')
 vim.keymap.set('n', '<leader>.', ':Telescope commands<CR>')
 vim.keymap.set('n', '<leader>,', ':lua require("a").root_reopen_file()<CR>')
-vim.keymap.set('n', '<leader><leader>.', ':Telescope help_tags<CR>')
+vim.keymap.set('n', '<leader><leader>.', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+vim.keymap.set('n', '<leader><leader><leader>.', ':Telescope help_tags<CR>')
 -- vim.keymap.set('n', '<leader><', ':lua require("a").goto_previous_outline()<CR>', { noremap = true, silent = true })
 -- vim.keymap.set('n', '<leader>>', ':lua require("a").goto_next_outline()<CR>', { noremap = true, silent = true })
 -- vim.keymap.set('n', '<leader><Left>', ':lua require("a").goto_previous_outline()<CR>', { noremap = true, silent = true })
@@ -66,6 +69,7 @@ vim.keymap.set('n', '<leader>cc', ':lua ExecuteOnTerminal("I")<CR>')
 vim.keymap.set('v', '<leader>cc', ':lua ExecuteOnTerminal("V")<CR>')
 
 --* functions
+
 --** toggleComments
 function ToggleComments()
   -- Get the comment character based on filetype
