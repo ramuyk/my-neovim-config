@@ -3,21 +3,20 @@ vim.o.number = true
 vim.o.relativenumber = true
 vim.o.clipboard = 'unnamedplus'
 
-local builtin = require 'telescope.builtin'
-
 --* special characters
 vim.keymap.set('n', '<C-Left>', ':bprevious<CR>')
 vim.keymap.set('n', '<C-Right>', ':bnext<CR>')
-vim.keymap.set('n', '<C-j>', '<C-w>j')
-vim.keymap.set('n', '<C-k>', '<C-w>k')
-vim.keymap.set('n', '<C-l>', '<C-w>l')
-vim.keymap.set('n', '<C-h>', '<C-w>h')
+-- vim.keymap.set('n', '<C-j>', '<C-w>j')
+-- vim.keymap.set('n', '<C-k>', '<C-w>k')
+-- vim.keymap.set('n', '<C-l>', '<C-w>l')
+-- vim.keymap.set('n', '<C-h>', '<C-w>h')
 vim.keymap.set('v', '<Tab>', ':lua ToggleComments()<CR>')
-vim.keymap.set('n', '<leader>.', ':Telescope commands<CR>')
-vim.keymap.set('n', '<leader>,', ':lua require("a").root_reopen_file()<CR>')
-vim.keymap.set('n', '<leader><leader>.', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+vim.keymap.set('n', '<leader>.', ':Telescope builtin<CR>')
+vim.keymap.set('n', '<leader>,', ':Telescope find_files<CR>')
+--vim.keymap.set('n', '<leader><leader>.', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+vim.keymap.set('n', '<leader><leader>.', ':Telescope keymaps<CR>')
 vim.keymap.set('n', '<leader><leader><leader>.', ':Telescope help_tags<CR>')
--- vim.keymap.set('n', '<leader><', ':lua require("a").goto_previous_outline()<CR>', { noremap = true, silent = true })
+-- vim.keymap.set('n', '<leader><', ':lua require("").goto_previous_outline()<CR>', { noremap = true, silent = true })
 -- vim.keymap.set('n', '<leader>>', ':lua require("a").goto_next_outline()<CR>', { noremap = true, silent = true })
 -- vim.keymap.set('n', '<leader><Left>', ':lua require("a").goto_previous_outline()<CR>', { noremap = true, silent = true })
 -- vim.keymap.set('n', '<leader><Right>', ':lua require("a").goto_next_outline()<CR>', { noremap = true, silent = true })
@@ -31,13 +30,17 @@ vim.keymap.set('n', '<M-Right>', '<C-W>5<')
 vim.keymap.set('n', '<M-Up>', '<C-W>+')
 vim.keymap.set('n', '<M-Down>', '<C-W>-')
 
+vim.keymap.set('n', ',r', ':Telescope registers<CR>')
+vim.keymap.set('n', ',b', ':Telescope marks<CR>')
+
 --* a
 vim.keymap.set('n', '<leader>a', ':Ntree<CR>')
 
 --* b
 vim.keymap.set('n', '<leader>bb', ':Telescope buffers<CR>')
+vim.keymap.set('n', '<leader>bg', ':Telescope git_status<CR>')
 vim.keymap.set('n', '<leader>bt', ':Telescope oldfiles<CR>')
-vim.keymap.set('n', '<leader>bp', ':Telescope find_files<CR>')
+vim.keymap.set('n', '<leader>bp', ':Telescope git_files<CR>')
 vim.keymap.set('n', '<leader>bk', ':bprevious<CR>:bdelete #<CR>')
 vim.keymap.set('n', '<leader>b+', ':!chmod +x %<CR>')
 vim.keymap.set('n', '<leader>bl', ':lua SystemLocate()<CR>')
@@ -69,7 +72,6 @@ vim.keymap.set('n', '<leader>cc', ':lua ExecuteOnTerminal("I")<CR>')
 vim.keymap.set('v', '<leader>cc', ':lua ExecuteOnTerminal("V")<CR>')
 
 --* functions
-
 --** toggleComments
 function ToggleComments()
   -- Get the comment character based on filetype
