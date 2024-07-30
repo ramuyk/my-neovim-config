@@ -255,6 +255,8 @@ require('lazy').setup({
       },
     },
   },
+  -- firenvim
+  --   { 'glacambre/firenvim', build = ':call firenvim#install(0)' },
 
   --* [[ Install `which-key.nvim` plugin ]]
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
