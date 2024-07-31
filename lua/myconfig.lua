@@ -11,8 +11,8 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
 })
 
 --* special characters
-vim.keymap.set('n', '<C-Left>', ':bprevious<CR>')
-vim.keymap.set('n', '<C-Right>', ':bnext<CR>')
+vim.keymap.set('n', '<Left>', ':bprevious<CR>')
+vim.keymap.set('n', '<Right>', ':bnext<CR>')
 -- vim.keymap.set('n', '<C-j>', '<C-w>j')
 -- vim.keymap.set('n', '<C-k>', '<C-w>k')
 -- vim.keymap.set('n', '<C-l>', '<C-w>l')
@@ -43,8 +43,8 @@ vim.keymap.set('n', ',m', ':Telescope marks<CR>')
 -- local gt_dirs = require 'gt_directories'
 --vim.keymap.set('n', ',,', ':lua FindAndOpenGT_Directories("/home/rafael/")<CR>')
 vim.keymap.set('n', ',,', ':lua FindAndOpenGT_Directories(os.getenv("HOME") .. "/")<CR>')
+vim.keymap.set('n', '<leader>11', ':lua FindAndOpenGT_Directories("/home/Dados/GitHub/")<CR>')
 vim.keymap.set('n', '<leader>12', ':lua FindAndOpenGT_Directories(os.getenv("HOME") .. "/")<CR>')
-vim.keymap.set('n', '<leader>14', ':lua FindAndOpenGT_Directories("/home/Dados/GitHub/")<CR>')
 
 --* a
 vim.keymap.set('n', '<leader>a', ':e `dirname %`<CR>')
@@ -75,6 +75,9 @@ vim.keymap.set('n', '<leader>fei', '<cmd>edit ' .. os.getenv 'HOME' .. '/.doom.d
 vim.keymap.set('n', '<leader>fem', '<cmd>edit ' .. os.getenv 'HOME' .. '/.doom.d/elisp.el<CR>')
 vim.keymap.set('n', '<leader>fep', '<cmd>edit ' .. os.getenv 'HOME' .. '/.doom.d/packages.el<CR>')
 vim.keymap.set('n', '<leader>fer', '<cmd>edit ' .. os.getenv 'HOME' .. '/.doom.d/README.md<CR>')
+
+--* p
+vim.keymap.set('n', '<leader>pp', ':lua FindAndOpenGT_Directories(os.getenv("HOME") .. "/")<CR>')
 
 --* q
 vim.keymap.set('n', '<leader>qq', ':bprevious<CR>:bdelete #<CR>:q<CR>')
