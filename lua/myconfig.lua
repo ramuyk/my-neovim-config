@@ -41,7 +41,10 @@ vim.keymap.set('n', ',r', ':Telescope registers<CR>')
 vim.keymap.set('n', ',m', ':Telescope marks<CR>')
 
 -- local gt_dirs = require 'gt_directories'
-vim.keymap.set('n', ',,', ':lua FindAndOpenGT_Directories()<CR>')
+--vim.keymap.set('n', ',,', ':lua FindAndOpenGT_Directories("/home/rafael/")<CR>')
+vim.keymap.set('n', ',,', ':lua FindAndOpenGT_Directories(os.getenv("HOME") .. "/")<CR>')
+vim.keymap.set('n', '<leader>12', ':lua FindAndOpenGT_Directories(os.getenv("HOME") .. "/")<CR>')
+vim.keymap.set('n', '<leader>14', ':lua FindAndOpenGT_Directories("/home/Dados/GitHub/")<CR>')
 
 --* a
 vim.keymap.set('n', '<leader>a', ':e `dirname %`<CR>')
@@ -74,6 +77,7 @@ vim.keymap.set('n', '<leader>fep', '<cmd>edit ' .. os.getenv 'HOME' .. '/.doom.d
 vim.keymap.set('n', '<leader>fer', '<cmd>edit ' .. os.getenv 'HOME' .. '/.doom.d/README.md<CR>')
 
 --* q
+vim.keymap.set('n', '<leader>qq', ':bprevious<CR>:bdelete #<CR>:q<CR>')
 vim.keymap.set('n', '<leader>qr', ':lua ReloadConfig()<CR>')
 
 --* w
@@ -204,7 +208,7 @@ function ExecuteOnTerminal(type)
   end
 end
 
---* firenvim
+--** firenvim
 
 ---- Check if running in Neovim and started by Firenvim
 --if vim.fn.has 'nvim' == 1 and vim.fn.exists 'g:started_by_firenvim' == 1 then
@@ -258,50 +262,51 @@ end
 --  return false
 --end
 
---* git files
+--** git files
 
-local Job = require 'plenary.job'
-local telescope = require 'telescope.builtin'
+local actions = require 'telescope.actions'
+local action_state = require 'telescope.actions.state'
+local pickers = require 'telescope.pickers'
+local finders = require 'telescope.finders'
+local sorters = require 'telescope.sorters'
+local previewers = require 'telescope.previewers'
 
-function FindAndOpenGT_Directories()
+function FindAndOpenGT_Directories(home)
   -- Define the home directory
-  local home = '/home/Dados/Github/'
+  --local home = '/home/Dados/GitHub/'
 
-  -- Function to find all directories with a .git subdirectory, ignoring specified directories
-  local function find_gt_directories()
-    local result = {}
-    Job:new({
-      command = 'find',
-      args = {
-        home,
-        "-type d \\( -name node_modules -o -name volumes -o -name '.*' ! -name '.git' \\) -prune -o -type d -name .git -exec dirname {} \\;",
-      },
-      on_exit = function(j, return_val)
-        if return_val == 0 then
-          result = j:result()
-        end
-      end,
-    }):sync()
-    return result
+  local cmd = string.format(
+    "find %s -type d \\( -name node_modules -o -name volumes -o -name '.*' ! -name '.git' \\) -prune -o -type d -name .git -exec dirname {} \\;",
+    home
+  )
+  local results = vim.fn.systemlist(cmd)
+
+  -- Print each result
+  for _, result in ipairs(results) do
+    print(result)
   end
 
-  -- Find the directories
-  local directories = find_gt_directories()
-
-  -- Launch Telescope with the found directories
-  telescope.find_files {
-    prompt_title = 'GT Directories',
-    cwd = home,
-    find_command = { 'echo', table.concat(directories, '\n') },
-    attach_mappings = function(prompt_bufnr, map)
-      local function open_dired(selection)
-        vim.cmd('edit ' .. selection)
-      end
-      map('i', '<CR>', function(prompt_bufnr)
-        local selection = require('telescope.actions.state').get_selected_entry()
-        open_dired(selection.value)
-      end)
-      return true
-    end,
-  }
+  -- Use Telescope to open the results in a fuzzy search with a previewer
+  pickers
+    .new({}, {
+      prompt_title = 'GT Directories',
+      finder = finders.new_table {
+        results = results,
+      },
+      sorter = sorters.get_generic_fuzzy_sorter(),
+      previewer = previewers.new_termopen_previewer {
+        get_command = function(entry)
+          return { 'ls', '-l', entry.value }
+        end,
+      },
+      attach_mappings = function(_, map)
+        map('i', '<CR>', function(prompt_bufnr)
+          local selection = action_state.get_selected_entry()
+          actions.close(prompt_bufnr)
+          vim.cmd('edit ' .. selection.value)
+        end)
+        return true
+      end,
+    })
+    :find()
 end
