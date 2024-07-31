@@ -3,6 +3,13 @@ vim.o.number = true
 vim.o.relativenumber = true
 vim.o.clipboard = 'unnamedplus'
 
+vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
+  pattern = { '*' },
+  callback = function()
+    vim.api.nvim_exec('silent! normal! g`"zv', false)
+  end,
+})
+
 --* special characters
 vim.keymap.set('n', '<C-Left>', ':bprevious<CR>')
 vim.keymap.set('n', '<C-Right>', ':bnext<CR>')
