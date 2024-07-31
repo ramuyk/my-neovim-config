@@ -1,3 +1,11 @@
+--* libraries
+local actions = require 'telescope.actions'
+local action_state = require 'telescope.actions.state'
+local pickers = require 'telescope.pickers'
+local finders = require 'telescope.finders'
+local sorters = require 'telescope.sorters'
+local previewers = require 'telescope.previewers'
+
 --* configurations
 vim.o.number = true
 vim.o.relativenumber = true
@@ -140,13 +148,34 @@ function ToggleComments()
 end
 
 --** SystemLocate
+
 function SystemLocate()
   local search_query = vim.fn.input 'System Locate Search: '
   local results = vim.fn.systemlist('locate ' .. search_query)
-  vim.fn.setqflist({}, ' ', { title = 'Search Results', items = vim.tbl_map(function(item)
-    return { filename = item }
-  end, results) })
-  vim.cmd 'copen'
+
+  -- Use Telescope to open the results in a fuzzy search with a previewer
+  pickers
+    .new({}, {
+      prompt_title = 'GT Directories',
+      finder = finders.new_table {
+        results = results,
+      },
+      sorter = sorters.get_generic_fuzzy_sorter(),
+      previewer = previewers.new_termopen_previewer {
+        get_command = function(entry)
+          return { 'ls', '-l', entry.value }
+        end,
+      },
+      attach_mappings = function(_, map)
+        map('i', '<CR>', function(prompt_bufnr)
+          local selection = action_state.get_selected_entry()
+          actions.close(prompt_bufnr)
+          vim.cmd('edit ' .. selection.value)
+        end)
+        return true
+      end,
+    })
+    :find()
 end
 
 --** ReloadConfig
@@ -267,27 +296,12 @@ end
 
 --** git files
 
-local actions = require 'telescope.actions'
-local action_state = require 'telescope.actions.state'
-local pickers = require 'telescope.pickers'
-local finders = require 'telescope.finders'
-local sorters = require 'telescope.sorters'
-local previewers = require 'telescope.previewers'
-
 function FindAndOpenGT_Directories(home)
-  -- Define the home directory
-  --local home = '/home/Dados/GitHub/'
-
   local cmd = string.format(
     "find %s -type d \\( -name node_modules -o -name volumes -o -name '.*' ! -name '.git' \\) -prune -o -type d -name .git -exec dirname {} \\;",
     home
   )
   local results = vim.fn.systemlist(cmd)
-
-  -- Print each result
-  for _, result in ipairs(results) do
-    print(result)
-  end
 
   -- Use Telescope to open the results in a fuzzy search with a previewer
   pickers

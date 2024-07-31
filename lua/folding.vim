@@ -8,7 +8,7 @@ function! MyFoldExpr()
   let commentChar = substitute(&commentstring, '%s.*', '', '')
 
   " Fallback for specific filesyntax
-  if &filetype == 'python' || &filetype == 'sh' || &filetype == 'yaml' || &filetype == 'nginx' || &filetype == 'dockerfile' || &filetype == 'r' || &filetype == 'apache' || &filetype == 'conf'
+  if &filetype == 'python' || &filetype == 'sh' || &filetype == 'yaml' || &filetype == 'nginx' || &filetype == 'dockerfile' || &filetype == 'r' || &filetype == 'apache' || &filetype == 'conf' || &filetype == 'tmux'
     let commentChar = '#'
   elseif &filetype == 'javascript'
     let commentChar = '//'
