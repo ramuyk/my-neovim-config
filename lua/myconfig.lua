@@ -235,7 +235,7 @@ function ExecuteOnTerminal(type)
       file_path = file_path_mjs
     end
 
-    vim.cmd(':vert sp | terminal env NODE_PATH=/home/rafael/node_modules node ' .. file_path)
+    vim.cmd(':vert sp | terminal env NODE_PATH=/usr/local/lib/node_modules node ' .. file_path)
     --     os.execute 'xdotool key "Control_L+e"; xdotool type r'
   end
 end
