@@ -74,9 +74,9 @@ vim.keymap.set('v', '<leader>cc', ':lua ExecuteOnTerminal("V")<CR>')
 vim.keymap.set('n', '<leader>ee', ':vsplit | terminal<CR>')
 
 --* f
-vim.keymap.set('n', '<leader>fvd', '<cmd>edit ' .. vim.fn.stdpath 'config' .. '/init.lua<CR>')
-vim.keymap.set('n', '<leader>fvm', '<cmd>edit ' .. vim.fn.stdpath 'config' .. '/lua/myconfig.lua<CR>')
-vim.keymap.set('n', '<leader>fvr', '<cmd>edit ' .. vim.fn.stdpath 'config' .. '/README.md<CR>')
+vim.keymap.set('n', '<leader>fnd', '<cmd>edit ' .. vim.fn.stdpath 'config' .. '/init.lua<CR>')
+vim.keymap.set('n', '<leader>fnm', '<cmd>edit ' .. vim.fn.stdpath 'config' .. '/lua/myconfig.lua<CR>')
+vim.keymap.set('n', '<leader>fnr', '<cmd>edit ' .. vim.fn.stdpath 'config' .. '/README.md<CR>')
 
 vim.keymap.set('n', '<leader>fed', '<cmd>edit ' .. os.getenv 'HOME' .. '/.doom.d/config.el<CR>')
 vim.keymap.set('n', '<leader>fei', '<cmd>edit ' .. os.getenv 'HOME' .. '/.doom.d/init.el<CR>')
@@ -236,7 +236,7 @@ function ExecuteOnTerminal(type)
     end
 
     vim.cmd(':vert sp | terminal env NODE_PATH=/home/rafael/node_modules node ' .. file_path)
-    os.execute 'xdotool key "Control_L+e"; xdotool type r'
+    --     os.execute 'xdotool key "Control_L+e"; xdotool type r'
   end
 end
 

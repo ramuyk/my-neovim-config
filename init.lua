@@ -848,6 +848,7 @@ require('lazy').setup({
   --* [[ Install `todo-comments.nvim` plugin ]]
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  --* phaazon/hop.nvim
 
   {
     'phaazon/hop.nvim',
@@ -869,6 +870,12 @@ require('lazy').setup({
       vim.keymap.set('', 'T', function()
         hop.hint_char1 { direction = directions.BEFORE_CURSOR, current_line_only = true, hint_offset = 1 }
       end, { remap = true })
+      vim.keymap.set('', '<leader>jj', function()
+        hop.hint_words()
+      end, { desc = 'Hop Word' })
+      vim.keymap.set('', '<leader>jw', function()
+        hop.hint_anywhere()
+      end, { desc = 'Hop Pattern' })
     end,
   },
   --* [[ Install `mini.nvim` plugin ]]
